@@ -26,6 +26,7 @@ type ArticlesFormData struct {
 
 func main() {
 	initDB()
+	createTables()
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
@@ -52,7 +53,7 @@ func initDB() {
 	}
 
 	db, err = sql.Open("mysql", config.FormatDSN())
-	fmt.Println(config.FormatDSN())
+
 	checkError(err)
 
 	db.SetMaxOpenConns(25)
@@ -62,6 +63,16 @@ func initDB() {
 	db.SetConnMaxLifetime(5 * time.Minute)
 
 	err = db.Ping()
+	checkError(err)
+}
+
+func createTables() {
+	createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles (
+		id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+		body longtext COLLATE utf8mb4_unicode_ci
+	);`
+	_, err := db.Exec(createArticlesSQL)
 	checkError(err)
 }
 
