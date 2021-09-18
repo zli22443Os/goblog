@@ -24,6 +24,10 @@ type ArticlesFormData struct {
 	URL         *url.URL
 	Errors      map[string]string
 }
+type Article struct {
+	Body, Title string
+	ID          int64
+}
 
 func main() {
 	initDB()
@@ -156,7 +160,27 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
-	fmt.Fprint(w, "文章 ID："+id)
+
+	article := Article{}
+	query := "SELECT * FROM articles WHERE id = ?"
+
+	err := db.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Body)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "404文章没有找到")
+		} else {
+			checkError(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500服务器内部错误")
+		}
+	} else {
+		tmpl, err := template.ParseFiles("resources/views/articles/show.gohtml")
+
+		checkError(err)
+
+		tmpl.Execute(w, article)
+	}
 }
 
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
