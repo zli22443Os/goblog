@@ -8,6 +8,10 @@ import (
 
 var Router *mux.Router
 
+func SetupRoute(r *mux.Router) {
+	Router = r
+}
+
 func Name2URL(routeName string, pairs ...string) string {
 	url, err := Router.Get(routeName).URL(pairs...)
 	if err != nil {
