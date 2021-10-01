@@ -2,6 +2,7 @@ package routes
 
 import (
 	"goblog/app/http/controllers"
+	"goblog/app/middlewares"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -20,4 +21,7 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/articles/create", ac.Create).Methods("GET").Name("articles.create")
 	r.HandleFunc("/articles/{id:[0-9]+}/edit", ac.Edit).Methods("GET").Name("articles.edit")
 	r.HandleFunc("/articles/{id:[0-9]+}", ac.Update).Methods("POST").Name("articles.update")
+	r.HandleFunc("/articles/{id:[0-9]+}/delete", ac.Delete).Methods("POST").Name("articles.delete")
+
+	r.Use(middlewares.ForceHTMLMiddleware)
 }

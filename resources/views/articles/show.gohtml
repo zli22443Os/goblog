@@ -12,7 +12,7 @@
 
     {{ $idString := Int64ToString .ID }}
 
-    <form action="{{ RouteName2URL "articles.delete" "id" $idString }}" method="post">
+    <form action="{{ RouteName2URL "articles.delete" "id" $idString }} method="post">
         <button type="submit" onclick="return confirm('删除动作不可逆， 请确认是否继续')">删除</button>
     </form>
 </body>
